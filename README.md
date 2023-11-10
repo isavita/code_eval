@@ -40,7 +40,7 @@ On error:
 ```
 
 ## Authentication
-When making requests to the `/api/run` endpoint, you need to include an Authorization header with a Base64 encoded token. The header should be in the following format:
+The API uses an API key for authentication. When making requests to the /api/run endpoint, you need to include an X-Api-Key header with your API key. The header should be in the following format:
 ```text
-Authorization: Basic <Base64EncodedToken>
+X-Api-Key: your_api_key_here
 ```

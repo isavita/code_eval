@@ -22,6 +22,7 @@ defmodule CodeEvalWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/health", PageController, :health
   end
 
   scope "/api", CodeEvalWeb do

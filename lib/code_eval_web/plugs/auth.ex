@@ -6,11 +6,11 @@ defmodule CodeEvalWeb.Plugs.Auth do
   def init(options), do: options
 
   def call(conn, _options) do
-    auth_header = get_req_header(conn, "authorization")
+    auth_header = get_req_header(conn, "x-api-key")
     tokens = Application.fetch_env!(:code_eval, :auth_tokens)
 
     case auth_header do
-      ["Basic " <> creds] ->
+      [creds] ->
         case decode_token(creds) do
           {:ok, user_token} ->
             if user_token in tokens do

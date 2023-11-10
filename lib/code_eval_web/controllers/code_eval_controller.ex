@@ -17,7 +17,7 @@ defmodule CodeEvalWeb.CodeEvalController do
     end
   end
 
-  defp execution_timeout, do: Application.get_env(:code_eval, :execution_timeout, 5000)
+  defp execution_timeout, do: Application.fetch_env!(:code_eval, :execution_timeout)
 
   defp send_json_response(conn, status, payload) do
     conn

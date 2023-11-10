@@ -7,8 +7,7 @@ defmodule CodeEvalWeb.Plugs.Auth do
 
   def call(conn, _options) do
     auth_header = get_req_header(conn, "authorization")
-
-    tokens = Application.get_env(:code_eval, :auth_tokens)
+    tokens = Application.fetch_env!(:code_eval, :auth_tokens)
 
     case auth_header do
       ["Basic " <> creds] ->

@@ -7,8 +7,6 @@ import Config
 # before starting your production server.
 config :code_eval, CodeEvalWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 
-config :code_eval, auth_tokens: System.get_env("AUTH_TOKENS", "")
-
 # Do not print debug messages in production
 config :logger, level: :info
 

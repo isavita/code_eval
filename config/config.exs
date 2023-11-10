@@ -21,7 +21,9 @@ config :code_eval, CodeEvalWeb.Endpoint,
   pubsub_server: CodeEval.PubSub,
   live_view: [signing_salt: "+x4Q+0eY"]
 
-config :code_eval, auth_tokens: ""
+config :code_eval, auth_tokens: []
+
+config :code_eval, execution_timeout: 5000
 
 # Configure esbuild (the version is required)
 config :esbuild,

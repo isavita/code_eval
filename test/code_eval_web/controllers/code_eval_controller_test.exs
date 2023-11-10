@@ -19,7 +19,7 @@ defmodule CodeEvalWeb.CodeEvalControllerTest do
       params = %{code: code}
 
       response = post(conn, "/api/run", params)
-      assert %{"error" => _error_message} = json_response(response, 200)
+      assert %{"error" => _error_message} = json_response(response, 400)
     end
 
     test "authentication fails with incorrect token", %{conn: conn} do
@@ -38,6 +38,20 @@ defmodule CodeEvalWeb.CodeEvalControllerTest do
 
       response = post(conn, "/api/run", params)
       assert response.status == 401
+    end
+
+    test "code execution times out", %{conn: conn} do
+      old_timeout = Application.get_env(:code_eval, :execution_timeout)
+      Application.put_env(:code_eval, :execution_timeout, 10)
+      on_exit(fn -> Application.put_env(:code_eval, :execution_timeout, old_timeout) end)
+
+      conn = put_req_header(conn, "authorization", @valid_auth_header)
+      code = ":timer.sleep(100)"
+      params = %{code: code}
+
+      response = post(conn, "/api/run", params)
+      assert response.status == 408
+      assert %{"error" => "Execution timed out"} = json_response(response, 408)
     end
   end
 end

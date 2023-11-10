@@ -50,6 +50,19 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  auth_tokens =
+    System.get_env("AUTH_TOKENS")
+    |> String.split(",")
+    |> Enum.map(&Base.decode64!/1)
+
+  config :code_eval, auth_tokens: auth_tokens
+
+  execution_timeout =
+    System.get_env("EXECUTION_TIMEOUT", "5000")
+    |> String.to_integer()
+
+  config :code_eval, execution_timeout: execution_timeout
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

@@ -20,6 +20,12 @@ defmodule CodeEvalWeb.Router do
     get "/", PageController, :home
   end
 
+  scope "/api", CodeEvalWeb do
+    pipe_through :api
+
+    post "/run", CodeEvalController, :run
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", CodeEvalWeb do
   #   pipe_through :api

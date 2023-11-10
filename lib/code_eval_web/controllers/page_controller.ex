@@ -5,6 +5,10 @@ defmodule CodeEvalWeb.PageController do
     render(conn, :home, layout: false)
   end
 
+  def privacy(conn, _params) do
+    render(conn, :privacy, layout: false)
+  end
+
   def health(conn, _params) do
     conn
     |> put_resp_content_type("text/plain")

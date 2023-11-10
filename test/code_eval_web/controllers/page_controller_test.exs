@@ -6,6 +6,11 @@ defmodule CodeEvalWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Elixir Code Evaluation API"
   end
 
+  test "GET /privacy", %{conn: conn} do
+    conn = get(conn, ~p"/privacy")
+    assert html_response(conn, 200) =~ "Privacy Policy"
+  end
+
   test "GET /health", %{conn: conn} do
     conn = get(conn, ~p"/health")
     assert text_response(conn, 200) == "OK"

@@ -21,6 +21,8 @@ config :code_eval, CodeEvalWeb.Endpoint,
   pubsub_server: CodeEval.PubSub,
   live_view: [signing_salt: "+x4Q+0eY"]
 
+config :code_eval, auth_tokens: ""
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",

@@ -14,6 +14,10 @@ defmodule CodeEvalWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :api_auth do
+    plug CodeEvalWeb.Plugs.Auth
+  end
+
   scope "/", CodeEvalWeb do
     pipe_through :browser
 
@@ -21,7 +25,7 @@ defmodule CodeEvalWeb.Router do
   end
 
   scope "/api", CodeEvalWeb do
-    pipe_through :api
+    pipe_through [:api, :api_auth]
 
     post "/run", CodeEvalController, :run
   end

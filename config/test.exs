@@ -7,6 +7,8 @@ config :code_eval, CodeEvalWeb.Endpoint,
   secret_key_base: "xflhrbFCLlaaWjCJrGfLbVZCW51PlycV2ZN0syhMjYFKy2Mv2zNx7ACTNxq59lYH",
   server: false
 
+config :code_eval, auth_tokens: "dGVzdF90b2tlbg=="
+
 # Print only warnings and errors during test
 config :logger, level: :warning
 

@@ -1,0 +1,48 @@
+defmodule CodeEvalWeb.Plugs.Auth do
+  import Plug.Conn
+
+  @behaviour Plug
+
+  def init(options), do: options
+
+  def call(conn, _options) do
+    auth_header = get_req_header(conn, "authorization")
+
+    tokens =
+      Application.get_env(:code_eval, :auth_tokens)
+      |> String.split(",")
+      |> Enum.map(&Base.decode64!/1)
+
+    case auth_header do
+      ["Basic " <> creds] ->
+        case decode_token(creds) do
+          {:ok, user_token} ->
+            if user_token in tokens do
+              conn
+            else
+              send_unauthorized_response(conn)
+            end
+
+          _ ->
+            send_unauthorized_response(conn)
+        end
+
+      _ ->
+        send_unauthorized_response(conn)
+    end
+  end
+
+  defp decode_token(token) do
+    try do
+      {:ok, Base.decode64!(token)}
+    rescue
+      _ -> :error
+    end
+  end
+
+  defp send_unauthorized_response(conn) do
+    conn
+    |> send_resp(401, "Unauthorized")
+    |> halt()
+  end
+end

@@ -37,5 +37,49 @@ defmodule CodeEval.EvaluatorTest do
 
       assert {:ok, {4, "Result: 4\n"}} == Evaluator.run(code)
     end
+
+    test "evaluates Hundred Prisoners Problem strategies" do
+      code = ~S"""
+      defmodule HundredPrisoners do
+        def optimal_room(_, _, _, []), do: []
+        def optimal_room(prisoner, current_room, rooms, [_ | tail]) do
+          found = Enum.at(rooms, current_room - 1) == prisoner
+          next_room = Enum.at(rooms, current_room - 1)
+          [found] ++ optimal_room(prisoner, next_room, rooms, tail)
+        end
+
+        def optimal_search(prisoner, rooms) do
+          Enum.any?(optimal_room(prisoner, prisoner, rooms, Enum.to_list(1..50)))
+        end
+      end
+
+      prisoners = 1..10
+      n = 1..1000
+      generate_rooms = fn -> Enum.shuffle(1..100) end
+
+      random_strategy = Enum.count(n,
+        fn _ ->
+        rooms = generate_rooms.()
+        Enum.all?(prisoners, fn pr -> pr in (rooms |> Enum.take_random(50)) end)
+      end)
+
+      optimal_strategy = Enum.count(n,
+        fn _ ->
+        rooms = generate_rooms.()
+        Enum.all?(prisoners,
+          fn pr -> HundredPrisoners.optimal_search(pr, rooms) end)
+      end)
+
+      IO.puts "Random strategy: #{random_strategy} / #{n |> Range.size}"
+      IO.puts "Optimal strategy: #{optimal_strategy} / #{n |> Range.size}"
+      {random_strategy, optimal_strategy, n |> Range.size}
+      """
+
+      assert {:ok, {{random_strategy, optimal_strategy, _total_runs}, "Random strategy:" <> _}} =
+               Evaluator.run(code) |> dbg()
+
+      # We expect the optimal strategy to perform significantly better than the random strategy.
+      assert optimal_strategy > random_strategy
+    end
   end
 end

@@ -5,7 +5,7 @@ defmodule CodeEval.Evaluator do
         [] ->
           capture_io(code)
 
-        [{:ok, _module}] ->
+        [_ | _] ->
           capture_io(code)
 
         _ ->

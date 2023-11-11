@@ -22,7 +22,6 @@ defmodule CodeEvalWeb.CodeEvalControllerTest do
       assert %{"error" => _error_message} = json_response(response, 400)
     end
 
-    @tag :skip
     test "authentication fails with incorrect token", %{conn: conn} do
       conn = put_req_header(conn, "x-api-key", Base.encode64("wrong_token"))
       code = "Enum.sum([1, 2, 3])"
@@ -32,7 +31,6 @@ defmodule CodeEvalWeb.CodeEvalControllerTest do
       assert response.status == 401
     end
 
-    @tag :skip
     test "authentication fails with wrongly encoded token", %{conn: conn} do
       conn = put_req_header(conn, "x-api-key", "Basic wrong_encoding")
       code = "Enum.sum([1, 2, 3])"

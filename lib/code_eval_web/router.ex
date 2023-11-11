@@ -27,7 +27,7 @@ defmodule CodeEvalWeb.Router do
   end
 
   scope "/api", CodeEvalWeb do
-    pipe_through [:api]
+    pipe_through [:api, :api_auth]
 
     post "/run", CodeEvalController, :run
   end

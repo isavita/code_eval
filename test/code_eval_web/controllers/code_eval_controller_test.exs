@@ -3,6 +3,18 @@ defmodule CodeEvalWeb.CodeEvalControllerTest do
 
   @valid_auth_header Base.encode64("test_token")
 
+  setup do
+    original_group_leader = Process.group_leader()
+    {:ok, capture_pid} = StringIO.open("")
+    Process.group_leader(self(), capture_pid)
+
+    on_exit(fn ->
+      Process.group_leader(self(), original_group_leader)
+    end)
+
+    :ok
+  end
+
   describe "run/1" do
     test "evaluates code successfully", %{conn: conn} do
       conn = put_req_header(conn, "x-api-key", @valid_auth_header)
@@ -10,7 +22,26 @@ defmodule CodeEvalWeb.CodeEvalControllerTest do
       params = %{code: code}
 
       response = post(conn, "/api/run", params)
-      assert json_response(response, 200) == %{"result" => 6}
+      assert json_response(response, 200) == %{"result" => 6, "output" => ""}
+    end
+
+    test "captures IO output in code execution", %{conn: conn} do
+      conn = put_req_header(conn, "x-api-key", @valid_auth_header)
+
+      code = """
+      result = Enum.sum([1, 2, 3])
+      IO.puts("Sum: \#{result}")
+      result
+      """
+
+      params = %{code: code}
+
+      response = post(conn, "/api/run", params)
+
+      assert json_response(response, 200) == %{
+               "output" => "Sum: 6\n",
+               "result" => 6
+             }
     end
 
     test "returns an error for incorrect code", %{conn: conn} do

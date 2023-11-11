@@ -3,10 +3,10 @@ defmodule CodeEval.Evaluator do
     try do
       case Code.compile_string(code) do
         [] ->
-          evaluate(code)
+          capture_io(code)
 
         [{:ok, _module}] ->
-          evaluate(code)
+          capture_io(code)
 
         _ ->
           {:error, "Compilation failed"}
@@ -20,13 +20,24 @@ defmodule CodeEval.Evaluator do
     end
   end
 
-  defp evaluate(code) do
+  defp capture_io(code) do
+    old_group_leader = Process.group_leader()
+    {:ok, capture_pid} = StringIO.open("")
+    Process.group_leader(self(), capture_pid)
+
     try do
       {result, _binding} = Code.eval_string(code)
-      {:ok, result}
+      captured_output = capture_output(capture_pid)
+      {:ok, {result, captured_output}}
     rescue
       e in [RuntimeError, ArgumentError] -> {:error, Exception.message(e)}
+    after
+      Process.group_leader(self(), old_group_leader)
     end
+  end
+
+  defp capture_output(pid) do
+    StringIO.flush(pid)
   end
 
   defp format_token_error(line, column, description) do

@@ -26,10 +26,11 @@ The application exposes a single API endpoint to evaluate Elixir code:
 ```
 
 ### Response Format
-On successful evaluation:
+On successful evaluation including output (e.g. IO.puts):
 ```json
 {
-  "result": "Evaluation result"
+  "result": "Evaluation result",
+  "output": "Evaluation output"
 }
 ```
 On error:

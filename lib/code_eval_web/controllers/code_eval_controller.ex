@@ -7,8 +7,11 @@ defmodule CodeEvalWeb.CodeEvalController do
 
     try do
       case Task.await(task, execution_timeout()) do
-        {:ok, result} -> send_json_response(conn, 200, %{result: result})
-        {:error, error} -> send_json_response(conn, 400, %{error: error})
+        {:ok, {result, output}} ->
+          send_json_response(conn, 200, %{result: result, output: output})
+
+        {:error, error} ->
+          send_json_response(conn, 400, %{error: error})
       end
     catch
       :exit, _ ->

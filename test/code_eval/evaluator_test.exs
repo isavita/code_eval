@@ -2,6 +2,8 @@ defmodule CodeEval.EvaluatorTest do
   use ExUnit.Case
   alias CodeEval.Evaluator
 
+  import Mock
+
   setup do
     original_group_leader = Process.group_leader()
     {:ok, capture_pid} = StringIO.open("")
@@ -76,10 +78,18 @@ defmodule CodeEval.EvaluatorTest do
       """
 
       assert {:ok, {{random_strategy, optimal_strategy, _total_runs}, "Random strategy:" <> _}} =
-               Evaluator.run(code) |> dbg()
+               Evaluator.run(code)
 
-      # We expect the optimal strategy to perform significantly better than the random strategy.
+      # We expect the optimal strategy to be better than the random strategy.
       assert optimal_strategy > random_strategy
+    end
+
+    test "executes HTTP request and checks for HTML content" do
+      with_mock HTTPoison, get!: fn _url -> %{body: "<html></html>"} end do
+        code = "HTTPoison.get!(\"https://example.com/\").body"
+        assert {:ok, {result, ""}} = Evaluator.run(code)
+        assert result == "<html></html>"
+      end
     end
   end
 end

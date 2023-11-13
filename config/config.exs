@@ -55,6 +55,11 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :code_eval, :cachex,
+  name: :code_cache,
+  size: 100,
+  default_ttl: :timer.minutes(5)
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

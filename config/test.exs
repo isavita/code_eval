@@ -14,3 +14,7 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :code_eval, :cachex,
+  name: :code_cache,
+  default_ttl: 0

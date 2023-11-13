@@ -11,6 +11,7 @@ defmodule CodeEval.Application do
       CodeEvalWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:code_eval, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: CodeEval.PubSub},
+      {Cachex, name: :code_cache},
       # Start a worker by calling: CodeEval.Worker.start_link(arg)
       # {CodeEval.Worker, arg},
       # Start to serve requests, typically the last entry

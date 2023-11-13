@@ -1,5 +1,6 @@
 defmodule CodeEvalWeb.CodeEvalControllerTest do
   use CodeEvalWeb.ConnCase
+  alias CodeEval.Cache
 
   @valid_auth_header Base.encode64("test_token")
 
@@ -7,6 +8,7 @@ defmodule CodeEvalWeb.CodeEvalControllerTest do
     original_group_leader = Process.group_leader()
     {:ok, capture_pid} = StringIO.open("")
     Process.group_leader(self(), capture_pid)
+    Cache.reset!()
 
     on_exit(fn ->
       Process.group_leader(self(), original_group_leader)
@@ -83,6 +85,30 @@ defmodule CodeEvalWeb.CodeEvalControllerTest do
       response = post(conn, "/api/run", params)
       assert response.status == 408
       assert %{"error" => "Execution timed out"} = json_response(response, 408)
+    end
+
+    test "stores successful requests to the cache", %{conn: conn} do
+      old_ttl = Application.get_env(:code_eval, :cachex)[:default_ttl]
+      Application.put_env(:code_eval, :cachex, default_ttl: 10_000)
+      Cache.reset!()
+
+      on_exit(fn ->
+        Application.put_env(:code_eval, :cachex, default_ttl: old_ttl)
+        Cache.reset!()
+      end)
+
+      conn = put_req_header(conn, "x-api-key", @valid_auth_header)
+      code = "Enum.reduce([1, 2, 3], 0, &(&1 + &2))"
+
+      response = post(conn, "/api/run", %{code: code})
+      response_body = json_response(response, 200)
+
+      {:ok, cache_value} = Cache.fetch(code)
+      assert cache_value == {response_body["result"], response_body["output"]}
+
+      # make second request to verify the cache returns the same value
+      response = post(conn, "/api/run", %{code: code})
+      assert json_response(response, 200) == response_body
     end
   end
 end

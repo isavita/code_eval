@@ -47,6 +47,7 @@ defmodule CodeEval.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
+      {:cachex, "~> 3.6"},
       # libs that can be used in the code eval
       {:httpoison, "~> 2.0"}
     ]
